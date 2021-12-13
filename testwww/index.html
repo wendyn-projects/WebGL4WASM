@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+  <head>
+    <title>WASM Test</title>
+    <style>
+      .code_view
+      {
+          font-family: consolas;
+          font-size:   15px;
+      }
+      table, th, td
+      {
+        border: 1px solid silver;
+        border-collapse: collapse;
+      }
+    </style>
+    <script src="wasminst.js"></script>
+    <script src="wglutil.js"></script>
+    <script>
+      var program = new wasmInst("program.wasm");
+      program.importFunction("");
+    </script>
+  </head>
+  <body>
+    <div class="code_view"><h2>Canvas:</h2><br>
+      <canvas width = "640" height = "480" id = "my_Canvas"></canvas>
+    </div>
+    <div class="code_view"><h2>Output:</h2><br>
+      <div id="output"></div>
+    </div>
+    <div class="code_view"><h2>Memory:</h2><br>
+      <div id="memory" class="code_view"></div>
+    </div>
+    <script>
+      console.log("Loading the WASM program.");
+      program.loadWasm().then(function()
+      {
+        console.log("WASM program loaded.");
+        var exports = program.exports;
+        document.getElementById("memory").innerHTML = program.memoryHexView();
+        document.getElementById("output").innerHTML = program.getString(exports.c_hello());
+      });
+    </script>
+  </body>
+</html>
