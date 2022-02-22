@@ -7,39 +7,73 @@
       {
           font-family: consolas;
           font-size:   15px;
+          white-space: pre;
       }
       table, th, td
       {
         border: 1px solid silver;
         border-collapse: collapse;
+        white-space: pre;
       }
     </style>
-    <script src="wasminst.js"></script>
     <script src="wglutil.js"></script>
+    <script src="wasm_container.js"></script>
+    <script src="webgl4wasm.js"></script>
+    <script src="wcdbgutil.js"></script>
     <script>
-      var program = new wasmInst("program.wasm");
-      program.importFunction("");
+      var program = new WasmContainer("program.wasm");
+      var gl;
+      var webGL4WASM;
+
+      function updateView()
+      {
+        updateMemoryHexView(document.getElementById("memory"), program, 0x100000);
+      }
+
+      function showExports()
+      {
+        updateExportView(document.getElementById("exports"), program);
+      }
+
+      var doLoad = function()
+      {
+        console.log("Loading the WASM program.");
+        gl = CreateGLContext(document.getElementById("my_Canvas"));
+        webGL4WASM = new WebGL4WASM(program, gl);
+        webGL4WASM.importOpenGLES3();
+        initOutputView(document.getElementById("output"), program, 10);
+        program.loadWasm().then(() =>
+        {
+          console.log("WASM program loaded.");
+          showExports();
+          updateView();
+        }).then(() =>
+        {
+          program.exports.load_scene();
+          updateView();
+        }).then(() =>
+        {
+          setInterval(() => program.exports.render_frame(GetTime()), 1000 / 60);
+          setInterval(() => updateView(), 500);
+        });
+      }
     </script>
   </head>
   <body>
-    <div class="code_view"><h2>Canvas:</h2><br>
+    <div class="code_view"><h2>Canvas:</h2>
       <canvas width = "640" height = "480" id = "my_Canvas"></canvas>
     </div>
-    <div class="code_view"><h2>Output:</h2><br>
-      <div id="output"></div>
+    <div class="code_view"><h2>Output:</h2>
+      <div id="output" class="code_view"></div>
     </div>
-    <div class="code_view"><h2>Memory:</h2><br>
+    <div class="code_view"><h2>Exports:</h2>
+      <div id="exports" class="code_view"></div>
+    </div>
+    <div class="code_view"><h2>Memory:</h2>
       <div id="memory" class="code_view"></div>
     </div>
     <script>
-      console.log("Loading the WASM program.");
-      program.loadWasm().then(function()
-      {
-        console.log("WASM program loaded.");
-        var exports = program.exports;
-        document.getElementById("memory").innerHTML = program.memoryHexView();
-        document.getElementById("output").innerHTML = program.getString(exports.c_hello());
-      });
+      doLoad();
     </script>
   </body>
 </html>
