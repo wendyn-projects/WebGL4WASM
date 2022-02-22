@@ -17,3 +17,7 @@ function CreateGLContext(cv, useAlpha = false, useDepth = true, useStencil = tru
     return gl;
 }
 
+function GetTime()
+{
+    return new Date().getTime() / 1000;
+}
