@@ -13,3 +13,7 @@ program.wasm: $(OBJS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $^
+
+.PHONY: clean
+clean:
+	rm -f $(OBJS)
