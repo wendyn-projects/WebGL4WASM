@@ -7,3 +7,6 @@ all: program.wasm
 
 program.wasm: test.o
 	$(LD) $(LDFLAGS) $^ -o $@
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $^
