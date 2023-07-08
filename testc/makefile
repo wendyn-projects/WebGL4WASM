@@ -8,7 +8,7 @@ OBJS=$(SOURCES:.c=.o)
 
 all: program.wasm
 
-program.wasm: $(OBJS)
+%.wasm: $(OBJS)
 	$(LD) $(LDFLAGS) $^ -o $@
 
 %.o: %.c
