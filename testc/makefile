@@ -3,9 +3,12 @@ LD=wasm-ld
 CFLAGS=-O3 --target=wasm32 -flto --no-standard-libraries -Iinclude
 LDFLAGS=--no-entry --export-all --allow-undefined
 
+SOURCES=$(wildcard *.c)
+OBJS=$(SOURCES:.c=.o)
+
 all: program.wasm
 
-program.wasm: test.o
+program.wasm: $(OBJS)
 	$(LD) $(LDFLAGS) $^ -o $@
 
 %.o: %.c
